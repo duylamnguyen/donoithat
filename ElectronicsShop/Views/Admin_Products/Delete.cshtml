@@ -1,0 +1,115 @@
+﻿@model ElectronicsShop.Models.Product
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Xóa</h2>
+
+<h3>Bạn có chắc chắn muốn xóa sản phẩm này ?</h3>
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Category.category_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category.category_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.product_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.product_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.discount_price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.discount_price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.stock)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.stock)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.brand)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.brand)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.is_new)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.is_new)
+        </dd>
+
+    </dl>
+    <div class="form-group">
+        <div class="col-md-10">
+            @{
+                List<ElectronicsShop.Models.Product_Images> listi = Model.Product_Images.ToList();
+            }
+            <table>
+                <tr>
+                    <td>
+                        <label>Ảnh 1</label>
+                        <br />
+                        <img src="@Url.Content("~/Images/" + listi[0].image_url)" alt="Anh" width="200" class="img-thumbnail" />
+                    </td>
+                    <td>
+                        <label>Ảnh 2</label>
+                        <br />
+                        <img src="@Url.Content("~/Images/" + listi[1].image_url)" alt="Anh" width="200" class="img-thumbnail" />
+                    </td>
+                    <td>
+                        <label>Ảnh 3</label>
+                        <br />
+                        <img src="@Url.Content("~/Images/" + listi[2].image_url)" alt="Anh" width="200" class="img-thumbnail" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Xóa" class="btn btn-default" /> |
+            @Html.ActionLink("Trở về danh sách", "Index")
+        </div>
+    }
+</div>

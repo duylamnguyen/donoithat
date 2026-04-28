@@ -1,0 +1,20 @@
+﻿
+@model ElectronicsShop.Models.Product
+@using System.Globalization
+@{
+    var imageList = Model.Product_Images.ToList();
+    var cultureInfo = new CultureInfo("vi-VN");
+}
+
+
+<div class="product-widget">
+    <div class="product-img">
+        <img src="~/Images/@imageList[0].image_url" alt="">
+    </div>
+    <div class="product-body">
+        <p class="product-category">@Model.Category.category_name</p>
+        <h3 class="product-name"><a href="@Url.Action("Details", "Product", new { id = @Model.product_id })">@Model.product_name</a></h3>
+        <h4 class="product-price">@(Model.discount_price.Value.ToString("C0", cultureInfo)) <del class="product-old-price">@(Model.price.Value.ToString("C0", cultureInfo))</del></h4>
+    </div>
+</div>
+

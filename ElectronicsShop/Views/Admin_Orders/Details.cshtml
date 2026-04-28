@@ -1,0 +1,88 @@
+﻿@model ElectronicsShop.Models.Order
+
+@{
+    ViewBag.Title = "Chi tiết";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Chi tiết</h2>
+
+<div>
+    <h4>Đặt hàng</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Shipment.shipment_address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Shipment.shipment_address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.first_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.first_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.order_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.order_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.total_amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.total_amount)
+        </dd>
+
+        <dt>
+            
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @{
+                string statusVi = Model.status;
+
+                switch (Model.status?.ToLower())
+                {
+                    case "processing": statusVi = "Đang xử lý"; break;
+                    case "shipping": statusVi = "Đang vận chuyển"; break;
+                    case "delivered": statusVi = "Đã giao"; break;
+                    case "cancelled": statusVi = "Đã hủy"; break;
+                }
+            }
+
+            @statusVi
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.payment_method)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.payment_method)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.order_note)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.order_note)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Thay đổi trạng thái", "Edit", new { id = Model.order_id }) |
+    @Html.ActionLink("Trở về danh sách", "Index")
+</p>

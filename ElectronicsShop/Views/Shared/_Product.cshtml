@@ -1,0 +1,71 @@
+﻿@model ElectronicsShop.Models.Product
+@using System.Globalization
+@{
+    // Safely build image list and fallback to noimage.png if none
+    var imageList = (Model.Product_Images != null && Model.Product_Images.Any())
+        ? Model.Product_Images.ToList()
+        : new List<ElectronicsShop.Models.Product_Images> { new ElectronicsShop.Models.Product_Images { image_url = "noimage.png" } };
+    var cultureInfo = new CultureInfo("vi-VN");
+}
+
+<div class="product">
+    <div class="product-img">
+        <div class="product-image-frame">
+            <img src="@Url.Content("~/Images/" + imageList[0].image_url)" alt="@Html.Encode(Model.product_name)">
+        </div>
+        <div class="product-label">
+            @if (Model.stock > 0)
+            {
+                <span class="sale">@Model.stock%</span>
+            }
+            @if ((bool)(Model.is_new))
+            {
+                <span class="new">NEW</span>
+            }
+        </div>
+    </div>
+    <div class="product-body">
+        <p class="product-category">@Model.Category.category_name</p>
+        <h3 class="product-name">
+            <a title="@Html.Encode(Model.product_name)" href="@Url.Action("Details", "Product", new { id = @Model.product_id })">
+                @Model.product_name
+            </a>
+        </h3>
+        <del class="product-old-price">@Model.price.Value.ToString("C0", cultureInfo)</del>
+        <h4 class="product-price">@Model.discount_price.Value.ToString("C0", cultureInfo) </h4>
+
+        <!-- New line: show stock quantity under price -->
+        <p class="product-stock">Số lượng: @Model.stock</p>
+
+        <div class="product-rating">
+            @for (int i = 0; i < 5; i++)
+            {
+                <i class="fa fa-star"></i>
+            }
+        </div>
+        <div class="product-btns">
+            <a href="javascript:void(0)"
+               class="wishlist-add"
+               data-productid="@Model.product_id"
+               title="Thêm vào yêu thích">
+                <i class="fa fa-heart-o"></i>
+            </a>
+            <button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">So sánh</span></button>
+            <a href="@Url.Action("Details", "Product", new { id = @Model.product_id })">
+                <i class="fa fa-eye"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="add-to-cart">
+        @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+        {
+            <input type="hidden" name="productId" value="@Model.product_id" />
+            <input type="hidden" name="quantity" value="1" min="1" max="@Model.stock" />
+
+            <button class="add-to-cart-btn">
+                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+            </button>
+        }
+    </div>
+</div>

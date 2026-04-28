@@ -1,0 +1,430 @@
+﻿@model IEnumerable<ElectronicsShop.Models.Product>
+
+@{
+    ViewBag.Title = "ProductsByCategory";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .product .product-body .product-category {
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #8D99AE;
+            height: 15px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Force product name to single line with ellipsis */
+        .product .product-body .product-name,
+        .product .product-body .product-name a {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            box-sizing: border-box;
+            height: 25px;
+            line-height: 25px;
+            margin: 5px 0;
+        }
+
+        .product .product-body .product-price {
+            color: #D10024;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 10px 0;
+            height: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .product .product-body .product-price .product-old {
+                font-size: 12px;
+                font-weight: 400;
+                color: #8D99AE;
+                text-decoration: line-through;
+                margin-left: 0;
+            }
+
+        .product .product-rating {
+            height: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Client-side pagination controls */
+        #search-paging {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+            #search-paging .page-btn {
+                padding: 6px 10px;
+                border-radius: 4px;
+                border: 1px solid #e3e6ea;
+                background: #fff;
+                cursor: pointer;
+            }
+
+                #search-paging .page-btn.active {
+                    background: #D10024;
+                    color: #fff;
+                    border-color: #D10024;
+                }
+
+            #search-paging .page-size {
+                width: 100px;
+            }
+
+        @@media (max-width:767px) {
+            #search-paging {
+                gap: 6px;
+            }
+        }
+    </style>
+}
+
+<div class="col-md-12">
+    <div class="row">
+        <div class="products-tabs">
+            <!-- tab -->
+            <div id="tab1" class="tab-pane active">
+                <div class="products-slick" data-nav="#slick-nav-1">
+
+                </div>
+                <div id="slick-nav-1" class="products-slick-nav"></div>
+            </div>
+            <!-- /tab -->
+        </div>
+    </div>
+</div>
+
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!-- ASIDE -->
+            <div id="aside" class="col-md-3">
+                <form action="@Url.Action("Search", "Product")" method="get">
+
+                    <!-- aside Widget -->
+                    <div class="aside">
+                        <h3 class="aside-title">Danh mục sản phẩm</h3>
+                        <div class="checkbox-filter">
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                var selectedCategories = ((int[])ViewBag.SelectedCategories).ToList();
+                                <div class="input-checkbox">
+                                    <input type="checkbox" name="selectedCategories" value="@category.category_id"
+                                           id="category-@category.category_id"
+                                           @(selectedCategories.Contains(category.category_id) ? "checked" : "") />
+                                    <label for="category-@category.category_id">
+                                        <span></span>
+                                        @category.category_name
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /aside Widget -->
+                    <!-- aside Widget -->
+                    <div class="aside">
+                        <h3 class="aside-title">Giá</h3>
+                        <div class="price-filter">
+                            <div id="price-slider"></div>
+                            <div class="input-number price-min">
+                                <input id="price-min" type="number" name="minPrice">
+                                <span class="qty-up">+</span>
+                                <span class="qty-down">-</span>
+                            </div>
+                            <span>-</span>
+                            <div class="input-number price-max">
+                                <input id="price-max" type="number" name="maxPrice">
+                                <span class="qty-up">+</span>
+                                <span class="qty-down">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /aside Widget -->
+                    <!-- aside Widget -->
+                    <div class="aside">
+                        <h3 class="aside-title">Thương hiệu</h3>
+                        <div class="checkbox-filter">
+                            @foreach (var brand in ViewBag.Brands)
+                            {
+                                var selectedBrands = ((string[])ViewBag.SelectedBrands).ToList();
+                                <div class="input-checkbox">
+                                    <input type="checkbox" name="selectedBrands" value="@brand"
+                                           id="brand-@brand"
+                                           @(selectedBrands.Contains(brand) ? "checked" : "") />
+                                    <label for="brand-@brand">
+                                        <span></span>
+                                        @brand
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /aside Widget -->
+
+                    <input class="input" type="hidden" name="query" value="@ViewBag.Query" placeholder="Tìm kiếm ở đây" />
+                    <button style="
+                        margin: 10px 0 20px 0;
+                        cursor: pointer;
+                        height: 40px;
+                        width: 100%;
+                        background: #D10024;
+                        color: #FFF;
+                        font-weight: 700;
+                        border: none;">
+                        Lọc sản phẩm
+                    </button>
+                </form>
+
+                <!-- aside Widget -->
+                <div class="aside">
+                    <h3 class="aside-title">Bán chạy nhất</h3>
+                    @foreach (var product in ViewBag.BestSellingProducts as IEnumerable<ElectronicsShop.Models.Product>)
+                    {
+                        @Html.Partial("_ProductWidget", product)
+                    }
+                </div>
+                <!-- /aside Widget -->
+            </div>
+
+
+
+            <!-- /ASIDE -->
+            <!-- STORE -->
+            <div id="store" class="col-md-9">
+                <!-- store top filter -->
+                <div class="store-filter clearfix">
+                    <div class="store-sort">
+                        <label>
+                            Sắp xếp theo:
+                            <select class="input-select">
+                                <option value="0">Phổ biến nhất</option>
+                                <option value="1">Vị trí</option>
+                            </select>
+                        </label>
+                    </div>
+                    <ul class="store-grid">
+                        <li class="active"><i class="fa fa-th"></i></li>
+                        <li><a href="#"><i class="fa fa-th-list"></i></a></li>
+                    </ul>
+                </div>
+                <!-- /store top filter -->
+                <!-- store products -->
+                <div class="row" id="search-products">
+                    <!-- product -->
+                    @foreach (var product in Model)
+                    {
+                        <div class="col-md-4 col-xs-6 product-item">
+                            @Html.Partial("_Product", product)
+                        </div>
+                    }
+                    <!-- /product -->
+                </div>
+                <!-- /store products -->
+                <!-- client-side pagination controls -->
+                <div id="search-paging" class="mt-3" aria-label="Pagination controls">
+                    <div>
+                        <label for="searchPageSize">Số sản phẩm / trang</label>
+                        <select id="searchPageSize" class="form-select page-size">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                        <button id="searchFirst" class="page-btn" type="button">&laquo; Đầu</button>
+                        <button id="searchPrev" class="page-btn" type="button">&lsaquo; Trước</button>
+                        <div id="searchPageNumbers" style="display:flex; gap:6px;"></div>
+                        <button id="searchNext" class="page-btn" type="button">Tiếp &rsaquo;</button>
+                        <button id="searchLast" class="page-btn" type="button">Cuối &raquo;</button>
+                    </div>
+                </div>
+            </div>
+            <!-- /STORE -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /SECTION -->
+@section Scripts {
+    <script>
+    (function () {
+            // make pagination/search init callable so it can be re-run after AJAX replacement
+            function initSearchPagination() {
+                const container = document.getElementById('search-products');
+                if (!container) return;
+
+                // NodeList -> array of element nodes (product item wrappers)
+                let rowsElems = Array.from(container.querySelectorAll('.product-item'));
+
+                // Pagination controls
+                const pageSizeSelect = document.getElementById('searchPageSize');
+                const pageNumbersContainer = document.getElementById('searchPageNumbers');
+                const firstBtn = document.getElementById('searchFirst');
+                const prevBtn = document.getElementById('searchPrev');
+                const nextBtn = document.getElementById('searchNext');
+                const lastBtn = document.getElementById('searchLast');
+                const rangeInfo = document.getElementById('search-range-info');
+
+                let pageSize = parseInt(pageSizeSelect.value, 10) || 9;
+                let currentPage = 1;
+
+                function calculateTotalPages() {
+                    return pageSize > 0 ? Math.max(1, Math.ceil(rowsElems.length / pageSize)) : 1;
+                }
+
+                function renderPageNumbers() {
+                    pageNumbersContainer.innerHTML = '';
+                    const totalPages = calculateTotalPages();
+                    const maxButtons = 7;
+                    let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                    let end = Math.min(totalPages, start + maxButtons - 1);
+                    if (end - start + 1 < maxButtons) {
+                        start = Math.max(1, end - maxButtons + 1);
+                    }
+                    for (let i = start; i <= end; i++) {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+                        btn.textContent = i;
+                        btn.dataset.page = i;
+                        btn.addEventListener('click', function () {
+                            currentPage = parseInt(this.dataset.page, 10);
+                            showPage(currentPage);
+                        });
+                        pageNumbersContainer.appendChild(btn);
+                    }
+                }
+
+                function showPage(page) {
+                    const totalPages = calculateTotalPages();
+                    if (page < 1) page = 1;
+                    if (page > totalPages) page = totalPages;
+                    currentPage = page;
+                    const startIndex = (currentPage - 1) * pageSize;
+                    const endIndex = Math.min(startIndex + pageSize, rowsElems.length);
+                    rowsElems.forEach((el, idx) => {
+                        el.style.display = (idx >= startIndex && idx < endIndex) ? '' : 'none';
+                    });
+                    renderPageNumbers();
+                    prevBtn.disabled = currentPage === 1;
+                    firstBtn.disabled = currentPage === 1;
+                    nextBtn.disabled = currentPage === totalPages;
+                    lastBtn.disabled = currentPage === totalPages;
+
+                    // update range info (if exists)
+                    if (rangeInfo) {
+                        rangeInfo.textContent = rowsElems.length === 0 ? '0' : (startIndex + 1) + '-' + endIndex + ' / ' + rowsElems.length;
+                    }
+                }
+
+                // Events
+                // detach previous listeners by cloning nodes to avoid duplicates
+                function replaceAndGet(id) {
+                    const el = document.getElementById(id);
+                    if (!el) return null;
+                    const clone = el.cloneNode(true);
+                    el.parentNode.replaceChild(clone, el);
+                    return clone;
+                }
+
+                const pageSizeSelectNew = replaceAndGet('searchPageSize') || pageSizeSelect;
+                const firstBtnNew = replaceAndGet('searchFirst') || firstBtn;
+                const prevBtnNew = replaceAndGet('searchPrev') || prevBtn;
+                const nextBtnNew = replaceAndGet('searchNext') || nextBtn;
+                const lastBtnNew = replaceAndGet('searchLast') || lastBtn;
+
+                pageSizeSelectNew.addEventListener('change', function () {
+                    pageSize = parseInt(this.value, 10) || 9;
+                    currentPage = 1;
+                    showPage(currentPage);
+                });
+                if (firstBtnNew) firstBtnNew.addEventListener('click', function () { showPage(1); });
+                if (prevBtnNew) prevBtnNew.addEventListener('click', function () { showPage(currentPage - 1); });
+                if (nextBtnNew) nextBtnNew.addEventListener('click', function () { showPage(currentPage + 1); });
+                if (lastBtnNew) lastBtnNew.addEventListener('click', function () { showPage(calculateTotalPages()); });
+
+                // initial render
+                showPage(1);
+            }
+
+            // AJAX filter submit: intercept the aside form, request server and replace product list fragment
+            function initAjaxFiltering() {
+                const asideForm = document.querySelector('#aside form');
+                if (!asideForm) return;
+
+                asideForm.addEventListener('submit', function (e) {
+                    // prevent full page load and do AJAX
+                    e.preventDefault();
+
+                    const submitUrl = asideForm.getAttribute('action') || window.location.href;
+                    const params = new URLSearchParams(new FormData(asideForm));
+                    const url = submitUrl + (submitUrl.indexOf('?') === -1 ? '?' : '&') + params.toString();
+
+                    // optional: show loading state (simple)
+                    const submitBtn = asideForm.querySelector('button[type="submit"], button');
+                    const oldText = submitBtn ? submitBtn.innerHTML : null;
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = 'Đang lọc...';
+                    }
+
+                    fetch(url, { credentials: 'same-origin' })
+                        .then(resp => {
+                            if (!resp.ok) throw new Error('Network error');
+                            return resp.text();
+                        })
+                        .then(htmlText => {
+                            // parse returned HTML and extract #search-products content
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(htmlText, 'text/html');
+                            const newContainer = doc.querySelector('#search-products');
+                            const localContainer = document.getElementById('search-products');
+                            if (newContainer && localContainer) {
+                                localContainer.innerHTML = newContainer.innerHTML;
+                            } else {
+                                // fallback: try to extract the part by selecting product-item nodes
+                                const frag = doc.querySelectorAll('.product-item');
+                                if (frag.length && localContainer) {
+                                    localContainer.innerHTML = '';
+                                    frag.forEach(n => localContainer.appendChild(n.cloneNode(true)));
+                                }
+                            }
+
+                            // re-init pagination / behaviour for replaced content
+                            initSearchPagination();
+                        })
+                        .catch(err => {
+                            console.error('Filter request failed', err);
+                        })
+                        .finally(() => {
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = oldText;
+                            }
+                        });
+                });
+            }
+
+            // init on DOM ready
+            document.addEventListener('DOMContentLoaded', function () {
+                initSearchPagination();
+                initAjaxFiltering();
+            });
+        })();</script>
+}

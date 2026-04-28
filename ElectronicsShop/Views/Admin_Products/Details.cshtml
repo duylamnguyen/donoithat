@@ -1,0 +1,140 @@
+﻿@model ElectronicsShop.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Chi tiết</h2>
+
+<div>
+    <h4>Sản phẩm</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Category.category_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category.category_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.product_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.product_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.discount_price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.discount_price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.stock)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.stock)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.brand)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.brand)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.is_new)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.is_new)
+        </dd>
+
+        <!-- New fields -->
+        <dt>
+            @Html.DisplayNameFor(model => model.material)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.material)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.size)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.size)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.color)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.color)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.warranty)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.warranty)
+        </dd>
+        <!-- End new fields -->
+
+    </dl>
+    <div class="form-group">
+        <div class="col-md-10">
+            @{
+                var listi = Model.Product_Images.ToList();
+            }
+            <div>
+                @if (listi.Any())
+                {
+                    foreach (var img in listi)
+                    {
+                        <img src="@Url.Content("~/Images/" + img.image_url)" alt="Anh" width="200" class="img-thumbnail" style="margin-right:10px;margin-bottom:10px;" />
+                    }
+                }
+                else
+                {
+                    <img src="@Url.Content("~/Images/noimage.png")" alt="Anh" width="200" class="img-thumbnail" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<p>
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.product_id }) |
+    @Html.ActionLink("Trở về danh sách", "Index")
+</p>

@@ -1,0 +1,688 @@
+﻿@section Scripts {
+    <script>
+        try {
+            window.addEventListener("load", function () {
+                var currentPath = window.location.pathname.toLowerCase().replace(/\/$/, "");
+
+                var navLinks = document.querySelectorAll('.main-nav li a');
+                var found = false;
+
+                navLinks.forEach(function (link) {
+                    var linkPath = new URL(link.href).pathname.toLowerCase().replace(/\/$/, "");
+
+                    link.parentElement.classList.remove('active');
+
+                    if (currentPath === linkPath || (currentPath !== "" && currentPath.includes(linkPath) && linkPath.length > 5)) {
+                        link.parentElement.classList.add('active');
+                        found = true;
+                    }
+                });
+
+                if (!found || currentPath.endsWith("hocrest_ful") || currentPath.includes("home/index")) {
+                    var firstLi = document.querySelector('.main-nav li:first-child');
+                    if (firstLi) {
+                        navLinks.forEach(l => l.parentElement.classList.remove('active'));
+                        firstLi.classList.add('active');
+                    }
+                }
+            });
+        } catch (e) {
+            console.error("Lỗi script focus menu: ", e);
+        }
+    </script>
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        /* ===== GLOBAL THEME (Interior Style) ===== */
+        body {
+            background: #F8F5F2;
+            color: #333;
+        }
+
+        a {
+            color: #8B5E3C;
+            transition: 0.2s;
+        }
+
+            a:hover {
+                color: #A67C52;
+            }
+
+        /* ===== NAVIGATION ===== */
+        .main-nav li a {
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        .main-nav li.active a {
+            color: #8B5E3C !important;
+            background-color: transparent !important;
+            font-weight: 600;
+        }
+
+            .main-nav li.active a::after {
+                content: "";
+                display: block;
+                width: 100%;
+                height: 2px;
+                background-color: #D6A77A;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+            }
+
+        /* ===== CHAT WIDGET ===== */
+        .chat-bubble {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B5E3C, #A67C52);
+            color: #fff;
+            border: none;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+            font-size: 20px;
+        }
+
+        /* Popup */
+        .chat-popup {
+            position: fixed;
+            right: 22px;
+            bottom: 90px;
+            width: 360px;
+            max-width: calc(100% - 44px);
+            height: 460px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1199;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+            .chat-popup.open {
+                display: flex;
+            }
+
+        /* Header */
+        .chat-header {
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #8B5E3C, #A67C52);
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .chat-header .close-btn {
+                background: transparent;
+                border: none;
+                color: #fff;
+                font-size: 18px;
+                cursor: pointer;
+            }
+
+        /* Content */
+        .chat-content {
+            padding: 12px;
+            background: #F8F5F2;
+            overflow-y: auto;
+            flex: 1 1 auto;
+        }
+
+        /* Messages */
+        .chat-message {
+            margin-bottom: 10px;
+            display: block;
+        }
+
+            .chat-message .meta {
+                font-size: 0.85rem;
+                color: #777;
+                margin-bottom: 4px;
+            }
+
+            .chat-message .text {
+                background: #fff;
+                padding: 8px 10px;
+                border-radius: 10px;
+                display: inline-block;
+                max-width: 90%;
+                border: 1px solid #eee;
+            }
+
+            .chat-message.user .text {
+                background: #D6A77A;
+                color: #fff;
+            }
+
+        /* Input */
+        .chat-input {
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #eee;
+            align-items: center;
+        }
+
+            .chat-input input[type="text"] {
+                flex: 1;
+                padding: 8px 10px;
+                border: 1px solid #e0d6cf;
+                border-radius: 6px;
+                background: #fff;
+            }
+
+            .chat-input button {
+                padding: 8px 12px;
+                border-radius: 6px;
+                background: #8B5E3C;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+            }
+
+                .chat-input button:hover {
+                    background: #6f4a2f;
+                }
+
+        /* Loading text */
+        .chat-loading {
+            font-style: italic;
+            color: #999;
+        }
+
+        /* Responsive */
+        @@media (max-width: 480px) {
+            .chat-popup {
+                width: 320px;
+                height: 420px;
+                right: 12px;
+                bottom: 78px;
+            }
+
+            .chat-bubble {
+                right: 12px;
+                bottom: 12px;
+            }
+        }
+    </style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" type="image/png" href="~/wwwroot/img/logo.png" />
+    <title>Electronics Shop</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="~/wwwroot/css/bootstrap.min.css" />
+
+
+
+    <!-- Slick -->
+    <link type="text/css" rel="stylesheet" href="~/wwwroot/css/slick.css" />
+    <link type="text/css" rel="stylesheet" href="~/wwwroot/css/slick-theme.css" />
+
+    <!-- nouislider -->
+    <link type="text/css" rel="stylesheet" href="~/wwwroot/css/nouislider.min.css" />
+
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" href="~/wwwroot/css/font-awesome.min.css">
+
+    <!-- Custom stlylesheet -->
+    <link type="text/css" rel="stylesheet" href="~/wwwroot/css/style.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+    @* Prepare dynamic cart + wishlist data for header *@
+    @{
+        var cartItems = new List<ElectronicsShop.Models.Cart>();
+        int cartCount = 0;
+        decimal cartSubtotal = 0M;
+
+        var wishlistItems = new List<ElectronicsShop.Models.Wishlist>();
+        int wishlistCount = 0;
+
+        if (Session["UserId"] != null)
+        {
+            try
+            {
+                int userId = (int)Session["UserId"];
+                // Cart items
+                cartItems = new ElectronicsShop.Controllers.CartController().GetCartItemsByUserId(userId) ?? new List<ElectronicsShop.Models.Cart>();
+                cartCount = cartItems.Sum(ci => (ci.quantity ?? 0));
+                foreach (var ci in cartItems)
+                {
+                    var price = ci.Product?.discount_price ?? ci.Product?.price ?? 0M;
+                    cartSubtotal += (ci.quantity ?? 0) * price;
+                }
+
+                // Wishlist items (HomeController contains GetWishListItemsByUserId)
+                wishlistItems = new ElectronicsShop.Controllers.WishlistController().GetWishListItemsByUserId(userId) ?? new List<ElectronicsShop.Models.Wishlist>();
+                wishlistCount = wishlistItems.Count;
+            }
+            catch
+            {
+                // Fail silently to avoid breaking rendering in layout
+                cartItems = new List<ElectronicsShop.Models.Cart>();
+                cartCount = 0;
+                cartSubtotal = 0M;
+                wishlistItems = new List<ElectronicsShop.Models.Wishlist>();
+                wishlistCount = 0;
+            }
+        }
+    }
+
+    <!-- HEADER -->
+    <header>
+        <!-- TOP HEADER -->
+        <div id="top-header">
+            <div class="container">
+                <ul class="header-links pull-left">
+                    <li><a href="#"><i class="fa fa-phone"></i> 0386184326</a></li>
+                    <li><a href="#"><i class="fa fa-envelope-o"></i> lamnd@gmail.com</a></li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-map-marker"></i> Số 298 Đ. Cầu Diễn, Tây Tựu, Hà Nội
+                        </a>
+                    </li>
+                </ul>
+                <ul class="header-links pull-right">
+                    <li>
+                        <a href="@Url.Action("ShipmentManagement", "Account")"><i class="fa fa-user-o"></i>Tài khoản</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /TOP HEADER -->
+        <!-- MAIN HEADER -->
+        <div id="header">
+            <!-- container -->
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <!-- LOGO -->
+                    <div class="col-md-3">
+                        <div class="header-logo">
+                            <a href="@Url.Action("Index", "Home")" class="logo">
+                                <img src="~/wwwroot/img/logo.png" width="140" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /LOGO -->
+                    <!-- SEARCH BAR -->
+                    <div class="col-md-6">
+                        <div class="header-search">
+                            <form action="@Url.Action("Search", "Product")" method="get" style="display: flex; align-content: center; align-items: center;">
+                                <select class="input-select">
+                                    <option value="0">Danh mục</option>
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        <option value="@category.category_id">@category.category_name</option>
+                                    }
+                                </select>
+                                <input class="input" type="text" name="query" value="@ViewBag.Query" placeholder="Tìm kiếm ở đây" />
+                                <button class="search-btn" style="padding: 0px;">Tìm kiếm</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /SEARCH BAR -->
+                    <!-- ACCOUNT -->
+                    <div class="col-md-3 clearfix">
+                        <div class="header-ctn">
+                            <!-- Wishlist -->
+                            <div class="dropdown" id="wishlist-dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <i class="fa fa-heart-o"></i>
+                                    <span class="text-white">Yêu thích</span>
+                                    <div class="qty wishlist-count">@wishlistCount</div>
+                                </a>
+                                <div class="cart-dropdown">
+                                    @Html.Partial("_WishlistItems", wishlistItems)
+                                </div>
+                            </div>
+                            <!-- /Wishlist -->
+                            <!-- Cart -->
+                            <div class="dropdown" id="cart-dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span class="text-white">Giỏ hàng</span>
+                                    <div class="qty cart-count">@cartCount</div>
+                                </a>
+                                <div class="cart-dropdown">
+                                    @Html.Partial("_CartItems", cartItems)
+                                </div>
+                            </div>
+                            <!-- /Cart -->
+                            <!-- Menu Toogle -->
+                            <div class="menu-toggle">
+                                <a href="#">
+                                    <i class="fa fa-bars"></i>
+                                    <span>Menu</span>
+                                </a>
+                            </div>
+                            <!-- /Menu Toogle -->
+                        </div>
+                    </div>
+                    <!-- /ACCOUNT -->
+                </div>
+                <!-- row -->
+            </div>
+            <!-- container -->
+        </div>
+        <!-- /MAIN HEADER -->
+    </header>
+    <!-- /HEADER -->
+    <!-- NAVIGATION -->
+    <nav id="navigation">
+        <!-- container -->
+        <div class="container">
+            <!-- responsive-nav -->
+            <div id="responsive-nav">
+                <!-- NAV -->
+                @{
+                    // Lấy tên Controller và Action hiện tại từ hệ thống
+                    var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+                    var action = ViewContext.RouteData.Values["Action"]?.ToString();
+                }
+
+                <ul class="main-nav nav navbar-nav">
+                    <li class="@(controller == "Home" && action == "Index" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Home")">Trang chủ</a>
+                    </li>
+
+                    <li>
+                        <a href="@Url.Action("Index", "Home")#hot-deal">Ưu đãi lớn</a>
+                    </li>
+
+                    <li class="@(action == "Categories" ? "active" : "")">
+                        <a href="@Url.Action("Categories", "Product")">Danh mục sản phẩm</a>
+                    </li>
+
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        // Kiểm tra nếu đang ở đúng trang danh mục này dựa trên QueryString
+                        var isCurrentCat = Context.Request.QueryString["categoryId"] == category.category_id.ToString();
+                        <li class="@(isCurrentCat ? "active" : "")">
+                            <a href="@Url.Action("ProductsByCategory", "Product", new { categoryId = category.category_id })">
+                                @category.category_name
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <!-- /NAV -->
+            </div>
+            <!-- /responsive-nav -->
+        </div>
+        <!-- /container -->
+    </nav>
+    <!-- /NAVIGATION -->
+    <!-- SECTION -->
+    @RenderBody()
+    <!-- SECTION -->
+    <!-- FOOTER -->
+    <footer id="footer">
+        <!-- top footer -->
+        <div class="section">
+            <!-- container -->
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer text-white">
+                            <h3 class="footer-title">Về chúng tôi</h3>
+                            <p>
+                                Hệ thống bán lẻ công nghệ uy tín: Điện thoại - Laptop - Máy ảnh - Phụ kiện. Cam kết sản phẩm chính hãng 100%, bảo hành chuẩn quốc tế và hỗ trợ kỹ thuật trọn đời.
+                            </p>
+                            <ul class="footer-links">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-map-marker"></i>Số 298 Đ. Cầu Diễn, Tây Tựu, Hà Nội
+                                    </a>
+                                </li>
+                                <li><a href="#"><i class="fa fa-phone"></i>0386184326</a></li>
+                                <li><a href="#"><i class="fa fa-envelope-o"></i>lamndgmail.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Danh mục</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">Ưu đãi lớn</a></li>
+                                <li><a href="#">Laptops</a></li>
+                                <li><a href="#">Điện thoại</a></li>
+                                <li><a href="#">Máy ảnh</a></li>
+                                <li><a href="#">Phụ kiện</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="clearfix visible-xs"></div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Thông tin</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">Về chúng tôi</a></li>
+                                <li><a href="#">Liên hệ</a></li>
+                                <li><a href="#">Chính sách bảo mật</a></li>
+                                <li><a href="#">Đổi trả hàng</a></li>
+                                <li><a href="#">Điều khoản và chính sách</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Dịch vụ</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">Tài khoản của tôi</a></li>
+                                <li><a href="#">Xem giỏ hàng</a></li>
+                                <li><a href="#">Danh sách yêu thích</a></li>
+                                <li><a href="#">Theo dõi đơn hàng</a></li>
+                                <li><a href="#">Hỗ trợ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /top footer -->
+        <!-- bottom footer -->
+        <div id="bottom-footer" class="section">
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <ul class="footer-payments">
+                            <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
+                            <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
+                        </ul>
+                        <span class="copyright">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            &copy;
+                            <script>
+                                document.write(new Date().getFullYear());
+                            </script> All Rights Reserved by <a href="https://github.com/tongdangquang">nguyenduylam</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </span>
+                    </div>
+                </div>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /bottom footer -->
+    </footer>
+    <!-- /FOOTER -->
+    <!-- Chat widget markup -->
+    <button id="chatToggle" class="chat-bubble" title="Trợ lý AI">
+        <i class="fa fa-comment"></i>
+    </button>
+
+    <div id="chatPopup" class="chat-popup" aria-hidden="true" role="dialog" aria-label="Trợ lý AI">
+        <div class="chat-header">
+            <span>Trợ lý AI</span>
+            <button class="close-btn" id="chatClose" aria-label="Đóng">&times;</button>
+        </div>
+        <div id="chatContent" class="chat-content" role="log" aria-live="polite"></div>
+        <div class="chat-input">
+            <input id="chatMessage" type="text" placeholder="Gõ câu hỏi..." aria-label="Nhập câu hỏi" />
+            <button id="chatSend" type="button">Gửi</button>
+        </div>
+    </div>
+
+    <!-- jQuery Plugins -->
+    <script src="~/wwwroot/js/jquery.min.js"></script>
+    <script src="~/wwwroot/js/bootstrap.min.js"></script>
+    <script src="~/wwwroot/js/slick.min.js"></script>
+    <script src="~/wwwroot/js/nouislider.min.js"></script>
+    <script src="~/wwwroot/js/jquery.zoom.min.js"></script>
+    <script src="~/wwwroot/js/main.js"></script>
+    <script src="@Url.Content("~/wwwroot/js/wishlist.js")"></script>
+    <script src="@Url.Content("~/wwwroot/js/cart.js")"></script>
+    <div style="display:none">
+        @Html.AntiForgeryToken()
+    </div>
+    <script>
+        window.wishlistAddUrl = '@Url.Action("Add", "Wishlist")';
+        window.wishlistLoginUrl = '@Url.Action("Login", "Account")';
+        window.cartAddUrl = '@Url.Action("Add", "Cart")';
+        window.cartRemoveUrl = '@Url.Action("Remove", "Cart")';
+        window.cartLoginUrl = '@Url.Action("Login", "Account")';
+    </script>
+
+    <script>
+        (function () {
+            // Elements
+            var toggle = document.getElementById('chatToggle');
+            var popup = document.getElementById('chatPopup');
+            var closeBtn = document.getElementById('chatClose');
+            var sendBtn = document.getElementById('chatSend');
+            var input = document.getElementById('chatMessage');
+            var content = document.getElementById('chatContent');
+
+            var chatUrl = '@Url.Action("Send", "Chat")';
+            // get anti-forgery token value if present
+            var afElem = document.querySelector('input[name="__RequestVerificationToken"]');
+            var afToken = afElem ? afElem.value : null;
+
+            function openPopup() {
+                popup.classList.add('open');
+                popup.setAttribute('aria-hidden', 'false');
+                input.focus();
+            }
+            function closePopup() {
+                popup.classList.remove('open');
+                popup.setAttribute('aria-hidden', 'true');
+                toggle.focus();
+            }
+
+            function appendMessage(who, text, cssClass) {
+                var wrap = document.createElement('div');
+                wrap.className = 'chat-message ' + (cssClass || '');
+                var meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.textContent = who;
+                var txt = document.createElement('div');
+                txt.className = 'text';
+                txt.textContent = text;
+                wrap.appendChild(meta);
+                wrap.appendChild(txt);
+                content.appendChild(wrap);
+                content.scrollTop = content.scrollHeight;
+            }
+
+            function appendLoading() {
+                var l = document.createElement('div');
+                l.className = 'chat-message loading';
+                l.innerHTML = '<div class="chat-loading">Đang xử lý...</div>';
+                content.appendChild(l);
+                content.scrollTop = content.scrollHeight;
+                return l;
+            }
+
+            async function sendMessage() {
+                var msg = input.value.trim();
+                if (!msg) return;
+                appendMessage('Bạn', msg, 'user');
+                input.value = '';
+                var loading = appendLoading();
+
+                try {
+                    var form = new FormData();
+                    form.append('message', msg);
+                    if (afToken) form.append('__RequestVerificationToken', afToken);
+
+                    var res = await fetch(chatUrl, {
+                        method: 'POST',
+                        body: form,
+                        credentials: 'same-origin',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    var j = await res.json();
+                    content.removeChild(loading);
+
+                    if (j.ok) {
+                        appendMessage('Trợ lý', j.reply, 'assistant');
+                    } else {
+                        appendMessage('Hệ thống', j.error || 'Lỗi khi gọi trợ lý', 'error');
+                    }
+                } catch (e) {
+                    if (content.contains(loading)) content.removeChild(loading);
+                    appendMessage('Hệ thống', e.message || 'Lỗi kết nối', 'error');
+                }
+            }
+
+            // events
+            toggle.addEventListener('click', function () {
+                if (popup.classList.contains('open')) closePopup(); else openPopup();
+            });
+            closeBtn.addEventListener('click', closePopup);
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // close when clicked outside (optional)
+            document.addEventListener('click', function (e) {
+                if (!popup.contains(e.target) && !toggle.contains(e.target) && popup.classList.contains('open')) {
+                    closePopup();
+                }
+            });
+        })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

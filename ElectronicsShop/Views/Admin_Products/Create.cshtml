@@ -1,0 +1,206 @@
+﻿@model ElectronicsShop.Models.Product
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create", "Admin_Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Sản phẩm</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.category_id, "Danh mục", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("category_id", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.category_id, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.product_name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.product_name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.product_name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.description, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.description, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.price, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.price, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.discount_price, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.discount_price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.discount_price, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.stock, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.stock, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.stock, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.brand, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.brand, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.brand, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <!-- New fields -->
+    <div class="form-group">
+        @Html.LabelFor(model => model.material, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.material, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.material, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.size, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.size, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.size, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.status, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.color, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.color, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.color, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.warranty, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.warranty, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.warranty, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.is_new, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.is_new)
+                @Html.ValidationMessageFor(model => model.is_new, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-10">
+            <label>Ảnh sản phẩm (thêm nhiều, có thể xóa trước khi lưu)</label><br />
+            <button type="button" class="btn btn-default" onclick="addFileInput()">Thêm ảnh</button>
+            <div id="fileInputs" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Thêm mới" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Trở về danh sách", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<style>
+    .img-box { position:relative; display:inline-block; margin-right:10px; margin-bottom:10px; }
+    .img-box img { width:200px; height:auto; }
+    .img-box .remove-btn {
+        position:absolute; top:5px; right:5px; background:#c00; color:white; border-radius:50%; width:26px; height:26px;
+        text-align:center; line-height:24px; cursor:pointer; font-weight:bold;
+    }
+</style>
+<script>
+    var nextInputId = 0;
+    function addFileInput() {
+        var container = document.getElementById("fileInputs");
+        var id = nextInputId++;
+        var wrapper = document.createElement("div");
+        wrapper.id = "fi_" + id;
+        wrapper.style.marginBottom = "10px";
+
+        var input = document.createElement("input");
+        input.type = "file";
+        input.name = "images";
+        input.onchange = (function(localId) {
+            return function (e) { previewFile(e, localId); };
+        })(id);
+
+        var previewBox = document.createElement("div");
+        previewBox.id = "preview_" + id;
+        previewBox.className = "img-box";
+
+        var remove = document.createElement("span");
+        remove.className = "remove-btn";
+        remove.innerText = "x";
+        remove.title = "Xóa";
+        remove.onclick = (function(localId) {
+            return function () { removeFileInput(localId); };
+        })(id);
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(previewBox);
+        wrapper.appendChild(remove);
+        container.appendChild(wrapper);
+    }
+
+    function removeFileInput(id) {
+        var el = document.getElementById("fi_" + id);
+        if (el) el.parentNode.removeChild(el);
+    }
+
+    function previewFile(event, id) {
+        var files = event.target.files;
+        var box = document.getElementById("preview_" + id);
+        box.innerHTML = "";
+        if (!files || files.length === 0) return;
+        var img = document.createElement("img");
+        img.src = URL.createObjectURL(files[0]);
+        img.className = "img-thumbnail";
+        box.appendChild(img);
+    }
+</script>

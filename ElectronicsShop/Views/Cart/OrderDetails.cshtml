@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "OrderDetails";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+@model IEnumerable<ElectronicsShop.Models.Order_Items>
+@using System.Globalization
+@{
+    var cultureInfo = new CultureInfo("vi-VN");
+    var order = Model?.FirstOrDefault()?.Order;
+    var shipment = order?.Shipment;
+    var user = order?.User;
+
+    string statusVi = order?.status;
+
+    switch (order?.status?.ToLower())
+    {
+        case "processing": statusVi = "Đang xử lý"; break;
+        case "shipping": statusVi = "Đang vận chuyển"; break;
+        case "delivered": statusVi = "Đã giao"; break;
+        case "cancelled": statusVi = "Đã hủy"; break;
+    }
+}
+
+@section Styles {
+    <style>
+        /* Scope all styles to #order-detail to avoid overriding layout/global styles */
+        #order-detail {
+            width: 100%;
+            background: #fff;
+            color: #000;
+        }
+
+        #order-detail .card-main {
+            max-width: 900px;
+            margin: auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+
+        #order-detail .card-item {
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        #order-detail .order-status {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #order-detail .card-header,
+        #order-detail .card-footer {
+            background: #fff;
+        }
+
+        /* avoid global selectors like h1,h2,... outside #order-detail */
+        #order-detail h1, #order-detail h2, #order-detail h3, #order-detail h4, #order-detail h5, #order-detail h6,
+        #order-detail p, #order-detail span, #order-detail small, #order-detail b {
+            color: #000;
+        }
+
+        /* small responsive tweaks */
+        @@media (max-width: 576px) {
+            #order-detail .card-main { padding: 10px; }
+            #order-detail .card-header img { width: 100px; height: auto; }
+        }
+    </style>
+}
+
+@if (Model != null && Model.Any())
+{
+    decimal totalOrderAmount = 0;
+
+    <div id="order-detail" class="my-1">
+        <div class="container">
+            <div class="card card-main">
+
+                <!-- HEADER -->
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="fw-bold mb-2">Cảm ơn vì đã đặt hàng!</h4>
+                            <p class="mb-1"><b>Địa chỉ giao hàng: </b>@(shipment?.shipment_address ?? "-"), @(shipment?.shipment_city ?? "-"), @(shipment?.shipment_country ?? "-")</p>
+                            <p class="mb-1"><b>Người nhận: </b>@(user?.last_name ?? "") @(user?.first_name ?? "")</p>
+                            <p class="mb-0"><b>Số điện thoại: </b>@(user?.phone ?? "-")</p>
+                            <p class="mb-0"><b>Trạng thái đơn hàng: </b>@(statusVi ?? "-")</p>
+                        </div>
+                        <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
+                            <img src="~/wwwroot/img/logo.png" width="130" alt="logo" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body p-3">
+
+                    @foreach (var item in Model)
+                    {
+                        if (item.price.HasValue)
+                        {
+                            var totalPrice = item.price.Value * (item.quantity ?? 0);
+                            totalOrderAmount += totalPrice;
+                            var image = item.Product?.Product_Images?.FirstOrDefault()?.image_url ?? "default.png";
+
+                            <div class="card card-item mb-3">
+                                <div class="card-body p-3">
+
+                                    <!-- PRODUCT -->
+                                    <div class="row align-items-center text-start text-md-start">
+                                        <div class="col-4 col-sm-2 mb-2 mb-md-0">
+                                            <img src="~/Images/@image"
+                                                 class="img-fluid"
+                                                 style="max-height:100px;" alt="@(item.Product?.product_name)" />
+                                        </div>
+
+                                        <div class="col-8 col-sm-5">
+                                            <h6 class="mb-1 fw-bold">@(item.Product?.product_name)</h6>
+                                        </div>
+
+                                        <div class="col-6 col-sm-2">
+                                            <p class="mb-0">Số lượng: @item.quantity</p>
+                                        </div>
+
+                                        <div class="col-6 col-sm-3 text-md-end fw-bold">
+                                            @totalPrice.ToString("C0", cultureInfo)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="card-header">
+                        <div class="row align-items-start">
+                            <div class="col-md-8">
+                                <p class="mb-1"><b>Tổng: </b>@totalOrderAmount.ToString("C0", cultureInfo)</p>
+                                <p class="mb-1"><b>Giảm giá: </b>0 đ</p>
+                                <p class="mb-1"><b>Phí vận chuyển: </b>Miễn phí</p>
+                                <p class="mb-1"><b>TỔNG TIỀN: </b>@totalOrderAmount.ToString("C0", cultureInfo)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-center">Không có thông tin chi tiết cho đơn hàng này.</p>
+}

@@ -1,0 +1,145 @@
+﻿﻿@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+@using System.Globalization
+@{
+    var cultureInfo = new CultureInfo("vi-VN");
+}
+@section Styles {
+    @*<link type="text/css" rel="stylesheet" href="~/wwwroot/css/bootstrap.min.css" />*@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+}
+
+@model IEnumerable<ElectronicsShop.Models.Cart>
+@{
+    ViewBag.Title = "Giỏ hàng của bạn";
+}
+
+<section class="pt-5 pb-5">
+    <div class="container">
+        <div class="row w-100">
+            <div class="col-lg-12 col-md-12 col-12">
+                <h3 class="display-5 mb-2 text-center">Giỏ hàng của bạn</h3>
+                @if (Model != null && Model.Any())
+                {
+                    <p class="mb-5 text-center">
+                        <span id="cart-row-count" class="font-weight-bold">@Model.Count()</span> sản phẩm trong giỏ hàng
+                    </p>
+                    <table id="shoppingCart" class="table table-condensed table-responsive">
+                        <thead>
+                            <tr>
+                                <th style="width:60%">Sản phẩm</th>
+                                <th style="width:10%">Giá</th>
+                                <th style="width:10%; text-align: center;">Số lượng</th>
+                                <th style="width:10%">Tổng</th>
+                                <th style="width:16%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr data-cartid="@item.cart_id" data-price="@item.Product.discount_price">
+                                    <td data-th="Product">
+                                        <div class="row">
+                                            <div class="col-md-3 text-left">
+                                                @{ var imageList = item.Product.Product_Images.ToList(); }
+                                                <img src="~/Images/@imageList[0].image_url" alt="" width="130"
+                                                     class="img-fluid d-none d-md-block rounded mb-2 shadow ">
+                                            </div>
+                                            <div class="col-md-9 text-left mt-sm-2">
+                                                <h4>@item.Product.product_name</h4>
+                                                <p class="font-weight-light">@item.Product.Category.category_name</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-th="Price">@item.Product.discount_price.Value.ToString("C0", cultureInfo)</td>
+                                    <td data-th="Quantity">
+                                        <input type="number"
+                                               class="form-control form-control-lg text-center cart-qty"
+                                               value="@item.quantity"
+                                               min="1"
+                                               max="@item.Product.stock">
+                                    </td>
+                                    <td data-th="Total" class="line-total">
+                                        @((item.quantity * item.Product.discount_price).Value.ToString("C0", cultureInfo))
+                                    </td>
+                                    <td class="actions" data-th="">
+                                        <div class="text-right">
+                                            @* AJAX remove button: matches cart.js binding *@
+                                            <button type="button" class="btn btn-white border-secondary bg-white btn-md mb-2 cart-remove"
+                                                    data-cartid="@item.cart_id"
+                                                    title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="float-right text-right" id="cart-total-wrapper">
+                        <h4>Tổng cộng:</h4>
+                        <h1 id="cart-total-amount">@Model.Sum(x => x.Product.discount_price * x.quantity).Value.ToString("C0", cultureInfo)</h1>
+                    </div>
+                }
+                else
+                {
+                    <p id="cart-empty-message">Giỏ hàng trống.</p>
+                }
+            </div>
+        </div>
+        <div class="row mt-4 d-flex align-items-stretch">
+            <div class="col-sm-6 mb-3 mb-m-1 order-md-1 text-md-left">
+                <a href="@Url.Action("Index", "Home")">
+                    <i class="fas fa-arrow-left mr-2"></i> Tiếp tục mua hàng
+                </a>
+            </div>
+            <div class="col-sm-6 order-md-2 text-right">
+                <a href="@Url.Action("Purchase", "Cart")" class="btn btn-primary mb-4 btn-lg pl-5 pr-5">Đặt hàng</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+  const vnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+
+  function recalcCartTotals() {
+    let grandTotal = 0;
+
+    document.querySelectorAll('#shoppingCart tbody tr').forEach(row => {
+      const price = parseFloat(row.dataset.price || '0');
+      const qtyInput = row.querySelector('.cart-qty');
+      const qty = parseInt(qtyInput?.value || '0', 10);
+
+      const lineTotal = price * qty;
+      grandTotal += lineTotal;
+
+      const lineTotalCell = row.querySelector('.line-total');
+      if (lineTotalCell) lineTotalCell.textContent = vnd.format(lineTotal);
+    });
+
+    const totalEl = document.getElementById('cart-total-amount');
+    if (totalEl) totalEl.textContent = vnd.format(grandTotal);
+  }
+
+  document.addEventListener('input', function (e) {
+    if (!e.target.classList.contains('cart-qty')) return;
+
+    const min = parseInt(e.target.min || '1', 10);
+    const max = parseInt(e.target.max || '999999', 10);
+    let val = parseInt(e.target.value || min, 10);
+
+    if (isNaN(val) || val < min) val = min;
+    if (val > max) val = max;
+    e.target.value = val;
+
+    recalcCartTotals();
+  });
+
+  // chạy lần đầu
+  recalcCartTotals();
+    </script>
+}

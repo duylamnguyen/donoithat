@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "Purchase";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+@using System.Globalization
+@{
+    var cultureInfo = new CultureInfo("vi-VN");
+}
+@model ElectronicsShop.Models.User
+@{
+    var carts = Model.Carts.ToList();
+    var totalAmount = carts.Sum(x => x.Product.discount_price * x.quantity);
+    var orderId = new Random().Next(10000, 99999);
+}
+
+@using (Html.BeginForm("Purchase", "Cart", FormMethod.Post, new { id = "purchase-form" }))
+{
+    <input type="hidden" id="totalAmount" value="@totalAmount" />
+    <input type="hidden" id="orderId" value="@orderId" />
+
+    <div class="section">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-7">
+                    <div class="billing-details">
+                        <div class="section-title">
+                            <h3 class="title">Địa chỉ thanh toán</h3>
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_first_name" name="recipient_first_name" placeholder="Tên" value="@Model.first_name">
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_last_name" name="recipient_last_name" placeholder="Họ và tên đệm" value="@Model.last_name">
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="tel" id="recipient_phone" name="recipient_phone" placeholder="Điện thoại" value="@Model.phone">
+                        </div>
+                        @{
+                            var shipments = Model.Shipments.ToList();
+                        }
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_address" name="address" placeholder="Địa chỉ" value="@shipments[0].shipment_address">
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_city" name="city" placeholder="Thành phố" value="@shipments[0].shipment_city">
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_country" name="country" placeholder="Quốc gia" value="@shipments[0].shipment_country">
+                        </div>
+                        <div class="form-group">
+                            <input class="input" type="text" id="billing_zipCode" name="zipCode" placeholder="ZIP Code" value="@shipments[0].shipment_zip_code">
+                        </div>
+                    </div>
+
+                    <div class="shipping-details">
+                        <div class="section-title">
+                            <h3 class="title">Địa chỉ giao hàng</h3>
+                        </div>
+                        <div class="input-checkbox">
+                            <input type="checkbox" id="shipping-address-checkbox">
+                            <label for="shipping-address-checkbox">
+                                <span></span>
+                                Gửi đến một địa chỉ khác?
+                            </label>
+                            <div class="caption" id="shipping-form">
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_first_name" name="recipient_first_name" placeholder="Tên">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_last_name" name="recipient_last_name" placeholder="Họ và tên đệm">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="tel" id="shipping_phone" name="recipient_phone" placeholder="Điện thoại">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_address" name="address" placeholder="Địa chỉ">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_city" name="city" placeholder="Thành phố">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_country" name="country" placeholder="Quốc gia">
+                                </div>
+                                <div class="form-group">
+                                    <input class="input" type="text" id="shipping_zipCode" name="zipCode" placeholder="ZIP Code">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-notes">
+                        <textarea class="input" name="order_note" placeholder="Ghi chú đơn hàng"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-5 order-details">
+                    <div class="section-title text-center">
+                        <h3 class="title">Đơn hàng của bạn</h3>
+                    </div>
+                    <div class="order-summary">
+                        <div class="order-col">
+                            <div><strong>SẢN PHẨM</strong></div>
+                            <div><strong>TỔNG</strong></div>
+                        </div>
+                        <div class="order-products">
+                            @foreach (var product in carts)
+                            {
+                                <div class="order-col">
+                                    <div>
+                                        @product.quantity<span>x </span>@product.Product.product_name
+                                    </div>
+                                    <div>@((product.quantity * product.Product.discount_price).Value.ToString("C0", cultureInfo))</div>
+                                </div>
+                            }
+                        </div>
+                        <div class="order-col">
+                            <div>Phí vận chuyển</div>
+                            <div><strong>MIỄN PHÍ</strong></div>
+                        </div>
+                        <div class="order-col">
+                            <div><strong>TỔNG CỘNG</strong></div>
+                            <div><strong class="order-total" style="text-wrap: nowrap;">@totalAmount.Value.ToString("C0", cultureInfo)</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="payment-method">
+                        <div class="input-radio">
+                            <input type="radio" name="paymentMethod" id="payment-vnpay" value="vnpay">
+                            <label for="payment-vnpay">
+                                <span></span>
+                                Thanh toán online (VNPAY)
+                            </label>
+                            <div class="caption">
+                                <p>Quét mã QR để thanh toán qua ngân hàng (MB Bank, Vietcombank...)</p>
+                            </div>
+                        </div>
+                        <div class="input-radio">
+                            <input type="radio" name="paymentMethod" id="payment-2" value="cod">
+                            <label for="payment-2">
+                                <span></span>
+                                Thanh toán khi nhận hàng
+                            </label>
+                        </div>
+                    </div>
+
+                    <input type="submit" value="Đặt hàng" class="primary-btn order-submit" onclick="submitForm(event)" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+
+        const form = document.getElementById("purchase-form");
+        const payment = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!payment) {
+            alert("Vui lòng chọn phương thức thanh toán.");
+            return;
+        }
+
+        const total = document.getElementById("totalAmount").value;
+        const orderId = document.getElementById("orderId").value;
+
+        form.submit();
+    }
+</script>
