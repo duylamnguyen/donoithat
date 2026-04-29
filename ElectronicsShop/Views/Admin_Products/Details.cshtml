@@ -7,6 +7,12 @@
 
 <h2>Chi tiết</h2>
 
+@{
+    // decode + encode an toàn cho mô tả và giữ xuống dòng
+    var decodedDescription = System.Web.HttpUtility.HtmlDecode(Model.description ?? string.Empty);
+    var safeDescription = System.Web.HttpUtility.HtmlEncode(decodedDescription);
+}
+
 <div>
     <h4>Sản phẩm</h4>
     <hr />
@@ -32,7 +38,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.description)
+            <div style="white-space:pre-wrap">@Html.Raw(safeDescription)</div>
         </dd>
 
         <dt>
