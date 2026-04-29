@@ -80,27 +80,27 @@
     <div class="form-group">
         <div class="col-md-10">
             @{
-                List<ElectronicsShop.Models.Product_Images> listi = Model.Product_Images.ToList();
+                var listi = Model.Product_Images?.ToList() ?? new List<ElectronicsShop.Models.Product_Images>();
             }
+
             <table>
                 <tr>
-                    <td>
-                        <label>Ảnh 1</label>
-                        <br />
-                        <img src="@Url.Content("~/Images/" + listi[0].image_url)" alt="Anh" width="200" class="img-thumbnail" />
-                    </td>
-                    <td>
-                        <label>Ảnh 2</label>
-                        <br />
-                        <img src="@Url.Content("~/Images/" + listi[1].image_url)" alt="Anh" width="200" class="img-thumbnail" />
-                    </td>
-                    <td>
-                        <label>Ảnh 3</label>
-                        <br />
-                        <img src="@Url.Content("~/Images/" + listi[2].image_url)" alt="Anh" width="200" class="img-thumbnail" />
-                    </td>
+                    @for (int i = 0; i < listi.Count; i++)
+                    {
+                        <td>
+                            <label>Ảnh @(i + 1)</label>
+                            <br />
+                            <img src="@Url.Content("~/Images/" + listi[i].image_url)"
+                                 width="200" class="img-thumbnail" />
+                        </td>
+                    }
                 </tr>
             </table>
+
+            @if (!listi.Any())
+            {
+                <p>Không có ảnh</p>
+            }
         </div>
     </div>
     @using (Html.BeginForm())

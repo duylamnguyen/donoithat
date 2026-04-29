@@ -226,7 +226,9 @@ namespace ElectronicsShop.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Product product = db.Products.Find(id);
-            db.Products.Remove(product);
+			var images = db.Product_Images.Where(x => x.product_id == id).ToList();
+			db.Product_Images.RemoveRange(images);
+			db.Products.Remove(product);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
