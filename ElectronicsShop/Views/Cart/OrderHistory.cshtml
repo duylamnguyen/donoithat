@@ -66,7 +66,7 @@
             }
 
         .table tbody tr:hover td:first-child {
-            border-left: 4px solid #D10024;
+            border-left: 4px solid #aa9381;
         }
 
         .table tbody td:last-child {
@@ -75,7 +75,7 @@
         }
 
         .table .price {
-            color: #D10024;
+            color: #aa9381;
             font-weight: 700;
             font-size: 16px;
         }
@@ -121,7 +121,7 @@
 </style>
 
 <div class="container" style="padding-bottom: 50px;">
-    <h2 class="text-uppercase" style="margin: 30px 0; font-weight: 700; border-left: 5px solid #D10024; padding-left: 15px;">
+    <h2 class="text-uppercase" style="margin: 30px 0; font-weight: 700; border-left: 5px solid #aa9381; padding-left: 15px;">
         Đơn hàng đã đặt
     </h2>
 
@@ -162,7 +162,7 @@
                             <span class="status-badge @cssClass">@statusVi</span>
                         </td>
                         <td>
-                            <i class="fa fa-map-marker" style="color:#D10024; margin-right:5px;"></i>
+                            <i class="fa fa-map-marker" style="color:#aa9381; margin-right:5px;"></i>
                             @(shipmentAddresses.ContainsKey(order.order_id) ? shipmentAddresses[order.order_id] : "---")
                         </td>
                         <td style="font-weight:bold;">

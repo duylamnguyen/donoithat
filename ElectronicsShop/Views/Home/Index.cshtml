@@ -56,7 +56,7 @@
         }
 
         .product .product-body .product-price {
-            color: #D10024;
+            color: #aa9381;
             font-size: 18px;
             font-weight: 700;
             margin: 10px 0;
@@ -105,7 +105,7 @@
             }
 
         .shop-body .cta-btn {
-            color: #D10024;
+            color: #aa9381;
             text-transform: uppercase;
             font-weight: 700;
             font-size: 12px;
@@ -118,7 +118,7 @@
             }
 
         .shop-body .cta-btn {
-            color: #D10024;
+            color: #aa9381;
             text-transform: uppercase;
             font-weight: 700;
             font-size: 12px;
@@ -252,7 +252,7 @@
             <div class="col-md-12">
                 <div class="section-title">
                     <h3 class="title">Sản phẩm mới</h3>
-                    <div class="section-nav">
+                    @*<div class="section-nav">
                         <ul class="section-tab-nav tab-nav">
                             @{
                                 var isFirst = true;
@@ -267,7 +267,7 @@
                                 isFirst = false;
                             }
                         </ul>
-                    </div>
+                    </div>*@
                 </div>
             </div>
             <!-- /section title -->
@@ -279,7 +279,7 @@
                         <div id="tab1" class="tab-pane active">
                             <div class="products-slick" data-nav="#slick-nav-1">
                                 <!-- product -->
-                                @foreach (var product in ViewBag.BestSellingProducts as IEnumerable<ElectronicsShop.Models.Product>)
+                                @foreach (var product in ViewBag.NewProducts as IEnumerable<ElectronicsShop.Models.Product>)
                                 {
                                     @Html.Partial("_Product", product)
                                 }
@@ -365,7 +365,7 @@
                         <div id="tab2" class="tab-pane fade in active">
                             <div class="products-slick" data-nav="#slick-nav-2">
                                 <!-- product -->
-                                @foreach (var product in ViewBag.NewProducts as IEnumerable<ElectronicsShop.Models.Product>)
+                                @foreach (var product in ViewBag.BestSellingProducts as IEnumerable<ElectronicsShop.Models.Product>)
                                 {
                                     @Html.Partial("_Product", product)
                                 }

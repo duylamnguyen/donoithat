@@ -62,7 +62,12 @@ namespace ElectronicsShop.Controllers
                         brand = reader["brand"] as string,
                         stock = reader["stock"] as int?,
                         is_new = reader["is_new"] as bool?,
-                        category_id = (int)reader["category_id"],
+                        material = reader["material"] as string,
+                        size = reader["size"] as string,
+                        status = reader["status"] as string,
+                        color = reader["color"] as string,
+                        warranty = reader["warranty"] as int?,
+						category_id = (int)reader["category_id"],
                         Category = new Category(),
                         Product_Images = new List<Product_Images>()
                     };
