@@ -41,6 +41,28 @@
         }
     }
 
+    // Simple notification helper (shows a temporary green toast at top-right)
+    function showCartNotification(message) {
+        var $notif = $('#cart-notification');
+        if (!$notif.length) {
+            $notif = $('<div id="cart-notification"></div>').css({
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                zIndex: 2147483647,
+                padding: '10px 14px',
+                backgroundColor: '#28a745',
+                color: '#fff',
+                borderRadius: '4px',
+                display: 'none',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                fontSize: '14px'
+            });
+            $('body').append($notif);
+        }
+        $notif.stop(true, true).text(message).fadeIn(150).delay(1800).fadeOut(300);
+    }
+
     function bindAddButtons() {
         $('.add-to-cart-btn').off('click.cart').on('click.cart', function (e) {
             var $btn = $(this);
@@ -78,6 +100,9 @@
                         $('#cart-dropdown .cart-dropdown').html(res.html);
                         bindRemoveButtons();
                     }
+
+                    // Show success notification (Vietnamese)
+                    showCartNotification('Thêm sản phẩm vào giỏ hàng thành công');
                 } else {
                     if (res.message) alert(res.message);
                     else window.location.reload();
