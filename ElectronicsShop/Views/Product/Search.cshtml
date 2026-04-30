@@ -81,6 +81,34 @@
                 width: 100px;
             }
 
+        /* Fixed image frame so all product cards align visually */
+        .product .product-img {
+            position: relative;
+        }
+
+        .product .product-image-frame {
+            width: 100%;
+            height: 220px; /* adjust height as you prefer */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+        }
+
+            .product .product-image-frame img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain; /* keep aspect ratio, center the image */
+                display: block;
+            }
+
+        /* small visual tweak for stock line */
+        .product .product-stock {
+            color: #777;
+            font-size: 13px;
+            margin-top: 6px;
+        }
         @@media (max-width:767px) {
             #search-paging {
                 gap: 6px;
