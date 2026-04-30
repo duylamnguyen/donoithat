@@ -190,10 +190,17 @@
 
 
 
-                        <ul class="product-btns">
-                            <li><a href="#"><i class="fa fa-heart-o"></i> Thêm vào yêu thích</a></li>
+                    <ul class="product-btns">
+                        @*<li><a href="#"><i class="fa fa-heart-o"></i> Thêm vào yêu thích</a></li>*@
+                        <li>
+                            <a href="javascript:void(0)"
+                               class="wishlist-add"
+                               data-productid="@Model.product_id">
+                                <i class="fa fa-heart-o"></i> Thêm vào yêu thích
+                            </a>
+                        </li>
                             @*<li><a href="#"><i class="fa fa-exchange"></i> add to compare</a></li>*@
-                        </ul>
+                    </ul>
 
                         <ul class="product-links">
                             <li>Danh mục:</li>
