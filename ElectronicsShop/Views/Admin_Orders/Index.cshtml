@@ -233,8 +233,8 @@
                                     <div class="order-note" title="@item.order_note">@item.order_note</div>
                                 </td>
                                 <td class="actions">
+                                    @Html.ActionLink("Xem chi tiết", "Details", new { id = item.order_id }, new { @class = "btn btn-sm btn-primary w-75 m-1" })
                                     @Html.ActionLink("Thay đổi trạng thái", "Edit", new { id = item.order_id }, new { @class = "btn btn-sm btn-outline-secondary w-75 m-1" })
-                                    @Html.ActionLink("Chi tiết", "Details", new { id = item.order_id }, new { @class = "btn btn-sm btn-outline-primary w-75 m-1" })
                                 </td>
                             </tr>
                         }

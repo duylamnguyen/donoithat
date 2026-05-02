@@ -8,9 +8,34 @@
 <h2>Chi tiết</h2>
 
 <div>
-    <h4>Đặt hàng</h4>
+    <h4>THÔNG TIN ĐƠN HÀNG</h4>
     <hr />
+    <h4>THÔNG TIN SẢN PHẨM</h4>
+    @foreach (var detail in Model.Order_Items)
+    {
+        <dl class="dl-horizontal" style="margin-bottom:24px;">
+            <dt>Mã sản phẩm</dt>
+            <dd>@detail.Product.product_id</dd>
+
+            <dt>Tên sản phẩm</dt>
+            <dd>@detail.Product.product_name</dd>
+
+            <dt>Thương hiệu</dt>
+            <dd>@detail.Product.brand</dd>
+
+            <dt>Số lượng</dt>
+            <dd>@detail.quantity</dd>
+
+            <dt>Đơn giá</dt>
+            <dd>@String.Format("{0:N0} ₫", detail.price)</dd>
+
+            <dt>Tổng tiền</dt>
+            <dd>@String.Format("{0:N0} ₫", detail.quantity * detail.price)</dd>
+        </dl>
+        <hr />
+    }
     <dl class="dl-horizontal">
+
         <dt>
             @Html.DisplayNameFor(model => model.Shipment.shipment_address)
         </dt>
@@ -35,16 +60,10 @@
             @Html.DisplayFor(model => model.order_date)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.total_amount)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.total_amount)
-        </dd>
+       
 
         <dt>
-            
+
             @Html.DisplayNameFor(model => model.status)
         </dt>
 
@@ -54,7 +73,7 @@
 
                 switch (Model.status?.ToLower())
                 {
-                    case "processing": statusVi = "Đang xử lý"; break;
+                    case "processing": statusVi = "Đang chuẩn bị hàng"; break;
                     case "shipping": statusVi = "Đang vận chuyển"; break;
                     case "delivered": statusVi = "Đã giao"; break;
                     case "cancelled": statusVi = "Đã hủy"; break;
