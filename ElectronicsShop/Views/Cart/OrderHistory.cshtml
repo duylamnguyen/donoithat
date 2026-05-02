@@ -8,6 +8,7 @@
     var shipmentAddresses = ViewBag.ShipmentAddresses as Dictionary<int, string>;
     var productCounts = ViewBag.ProductCounts as Dictionary<int, int>;
     var cultureInfo = new CultureInfo("vi-VN");
+    var allowedCancelStatuses = ViewBag.AllowedCancelStatuses;
 }
 
 <style>
@@ -121,6 +122,14 @@
 </style>
 
 <div class="container" style="padding-bottom: 50px;">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
     <h2 class="text-uppercase" style="margin: 30px 0; font-weight: 700; border-left: 5px solid #aa9381; padding-left: 15px;">
         Đơn hàng đã đặt
     </h2>
@@ -136,6 +145,7 @@
                     <th>Trạng thái</th>
                     <th>Địa chỉ giao hàng</th>
                     <th>Số lượng sản phẩm</th>
+                    <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -149,10 +159,15 @@
                         case "processing": cssClass = "st-processing"; statusVi = "Đang xử lý"; break;
                         case "shipping": cssClass = "st-shipping"; statusVi = "Đang vận chuyển"; break;
                         case "delivered": cssClass = "st-shipped"; statusVi = "Đã giao"; break;
-                        case "cancelled": cssClass = "st-cancelled"; statusVi = "Đã hủy"; break;
+                        case "cancel": cssClass = "st-cancelled"; statusVi = "Đã hủy"; break;
+                        case "failed": cssClass = "st-cancelled"; statusVi = "Thanh toán thất bại"; break;
+                        default: cssClass = "st-default"; statusVi = "Không xác định"; break;
                     }
-                    <tr onclick="location.href='@Url.Action("OrderDetails", "Cart", new { id = order.order_id })'">
-                        <td style="font-weight:bold;">#@order.order_id</td>
+                    <tr>
+                        <td style="font-weight:bold;"
+                            onclick="location.href='@Url.Action("OrderDetails", "Cart", new { id = order.order_id })'">
+                            #@order.order_id
+                        </td>
 
                         <td>@(((DateTime)order.order_date).ToString("dd/MM/yyyy HH:mm"))</td>
 
@@ -167,6 +182,19 @@
                         </td>
                         <td style="font-weight:bold;">
                             @(productCounts.ContainsKey(order.order_id) ? productCounts[order.order_id] : 0)
+                        </td>
+                        <td style="display: flex; column-gap: 4px;">
+                            <a href="@Url.Action("OrderDetails", "Cart", new { id = order.order_id })" class="btn btn-sm btn-primary" title="Xem chi tiết đơn hàng">
+                                <span class="fa fa-eye" />
+                            </a>
+                            @if (allowedCancelStatuses.Contains(order.status?.ToLower()))
+                            {
+                                using (Html.BeginForm("CancelOrder", "Cart", FormMethod.Post, new { onsubmit = "return confirm('Bạn có chắc muốn hủy đơn hàng này?');" }))
+                                {
+                                    @Html.Hidden("orderId", order.order_id)
+                                    <button type="submit" class="btn btn-danger btn-sm"><span class="fa fa-trash" title="Hủy đơn hàng" /></button>
+                                }
+                            }
                         </td>
                     </tr>
                 }

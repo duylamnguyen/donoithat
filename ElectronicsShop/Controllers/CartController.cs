@@ -13,9 +13,10 @@ namespace ElectronicsShop.Controllers
 	public class CartController : Customer_BaseController
 	{
 		private readonly string connectionString = ConnectionStrings.DefaultConnection;
+		private static readonly IList<string> ALLOWED_CANCEL_STATUS = new List<string> { "processing", "failed" };
 
-		// GET: Cart
-		public ActionResult Index()
+        // GET: Cart
+        public ActionResult Index()
 		{
 			if (Session["UserId"] == null)
 			{
@@ -536,7 +537,8 @@ namespace ElectronicsShop.Controllers
 				}
 				ViewBag.ShipmentAddresses = shipmentAddresses;
 				ViewBag.ProductCounts = productCounts;
-				return View(orders);
+				ViewBag.AllowedCancelStatuses = ALLOWED_CANCEL_STATUS;
+                return View(orders);
 			}
 		}
 
@@ -856,5 +858,68 @@ namespace ElectronicsShop.Controllers
 				return sw.GetStringBuilder().ToString();
 			}
 		}
-	}
+
+        [HttpPost]
+        public ActionResult CancelOrder(int orderId)
+        {
+            if (Session["UserId"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int userId = (int)Session["UserId"];
+            string currentStatus = null;
+            int orderUserId = 0;
+			var allowedStatuses = new[] { "processing", "failed" };
+
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+
+                // Lấy trạng thái và user_id của đơn hàng
+                string selectQuery = @"SELECT status, user_id FROM Orders WHERE order_id = @OrderId";
+                using (SqlCommand cmd = new SqlCommand(selectQuery, con))
+                {
+                    cmd.Parameters.AddWithValue("@OrderId", orderId);
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            currentStatus = rdr["status"] == DBNull.Value ? null : rdr["status"].ToString();
+                            orderUserId = rdr["user_id"] == DBNull.Value ? 0 : (int)rdr["user_id"];
+                        }
+                        else
+                        {
+                            TempData["Error"] = "Đơn hàng không tồn tại.";
+                            return RedirectToAction("OrderHistory");
+                        }
+                    }
+                }
+
+                // Kiểm tra quyền và trạng thái
+                if (orderUserId != userId)
+                {
+                    TempData["Error"] = "Bạn không có quyền hủy đơn hàng này.";
+                    return RedirectToAction("OrderHistory");
+                }
+                if (currentStatus == null || !ALLOWED_CANCEL_STATUS.Contains(currentStatus?.ToLower(), StringComparer.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "Chỉ có thể hủy đơn hàng đang ở trạng thái 'Đang chuẩn bị hàng' hoặc 'Thanh toán thất bại'.";
+                    return RedirectToAction("OrderHistory");
+                }
+
+                // Cập nhật trạng thái đơn hàng thành Cancel
+                string updateQuery = @"UPDATE Orders SET status = @Status WHERE order_id = @OrderId";
+                using (SqlCommand cmd = new SqlCommand(updateQuery, con))
+                {
+                    cmd.Parameters.AddWithValue("@OrderId", orderId);
+					cmd.Parameters.AddWithValue("@Status", "Cancel");
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            TempData["Success"] = "Đã hủy đơn hàng thành công.";
+            return RedirectToAction("OrderHistory");
+        }
+    }
 }

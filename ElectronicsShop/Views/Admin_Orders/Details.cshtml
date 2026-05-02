@@ -76,12 +76,13 @@
                     case "processing": statusVi = "Đang chuẩn bị hàng"; break;
                     case "shipping": statusVi = "Đang vận chuyển"; break;
                     case "delivered": statusVi = "Đã giao"; break;
-                    case "cancelled": statusVi = "Đã hủy"; break;
+                    case "cancel": statusVi = "Đã hủy"; break;
+                    case "failed": statusVi = "Thanh toán thất bại"; break;
                 }
-            }
+                    }
 
-            @statusVi
-        </dd>
+                    @statusVi
+                </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.payment_method)
