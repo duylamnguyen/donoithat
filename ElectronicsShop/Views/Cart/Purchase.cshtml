@@ -42,15 +42,7 @@
                         <div class="form-group">
                             <input class="input" type="text" id="billing_address" name="address" placeholder="Địa chỉ" value="@shipments[0].shipment_address">
                         </div>
-                        <div class="form-group">
-                            <input class="input" type="text" id="billing_city" name="city" placeholder="Thành phố" value="@shipments[0].shipment_city">
-                        </div>
-                        <div class="form-group">
-                            <input class="input" type="text" id="billing_country" name="country" placeholder="Quốc gia" value="@shipments[0].shipment_country">
-                        </div>
-                        <div class="form-group">
-                            <input class="input" type="text" id="billing_zipCode" name="zipCode" placeholder="ZIP Code" value="@shipments[0].shipment_zip_code">
-                        </div>
+                       
                     </div>
 
                     <div class="shipping-details">
@@ -164,7 +156,15 @@
 
         const total = document.getElementById("totalAmount").value;
         const orderId = document.getElementById("orderId").value;
+        const firstName = document.getElementById("billing_first_name").value.trim();
+        const lastName = document.getElementById("billing_last_name").value.trim();
+        const phone = document.getElementById("recipient_phone").value.trim();
+        const address = document.getElementById("billing_address").value.trim();
 
+        if (!firstName || !lastName || !phone || !address) {
+            alert("Vui lòng điền đầy đủ thông tin thanh toán.");
+            return;
+        }
         form.submit();
     }
 </script>
